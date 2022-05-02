@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,600&family=Hind:wght@300;400&family=Poppins:wght@200;500&family=Source+Sans+Pro:wght@200&family=Teko&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-font: 'Teko', sans-serif;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--primary-font);
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

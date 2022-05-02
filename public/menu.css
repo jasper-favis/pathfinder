@@ -1,0 +1,13 @@
+.menu-container {
+  margin-bottom: 50px;
+}
+
+.button {
+  padding: 10px;
+  font-size: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.button:hover {
+  cursor: pointer;
+}
