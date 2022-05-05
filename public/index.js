@@ -1,7 +1,7 @@
 import { dijkstra, getDijkstraPath } from "./dijkstra.js";
 
 
-const ROW_SIZE = 15;
+const ROW_SIZE = 25;
 const COL_SIZE = 50;
 const NODE_SIZE = 25;
 const gridStyle = {
@@ -16,6 +16,7 @@ let grid = [];
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
 let mouseIsPressed = false;
+let draggedNode;
 
 $(document).ready(() => {
   setup();
@@ -60,7 +61,7 @@ function displayGrid() {
       if (row && row.length > 0) {
         row.map(node => {
           if (node) {
-            displayNode(node);
+            $(".grid").append(displayNode(node));
           }
         });
       }
@@ -79,17 +80,24 @@ function displayNode(node) {
       : isWall
         ? "node-wall"
         : "";
-  const div = `
-    <div
-      id='node-${row}-${col}'
-      class='node ${extraClassName}'
-    ></div>
-  `;
-  $(".grid").append(
-    $(div).mousedown(() => handleMouseDown(row, col))
-      .mouseenter(() => handleMouseEnter(row, col))
-      .mouseup(() => handleMouseUp(row, col))
-  );
+
+  const div = $(`<div></div>`)
+    .attr("id", `node-${row}-${col}`)
+    .attr("class", "node " + extraClassName)
+    .attr("draggable", `${isSource || isTarget}`)
+    .mousedown(() => handleMouseDown(row, col))
+    .mouseenter(() => handleMouseEnter(row, col))
+    .mouseup(() => handleMouseUp(row, col))
+
+  if (isSource || isTarget) {
+    div
+      .on("dragstart", (event) => handleDragStart(event, row, col));
+  } else {
+    div
+      .on("dragover", (event) => event.preventDefault())
+      .on("drop", (event) => handleDrop(event, row, col))
+  }
+  return div;
 }
 
 $(".start-button").click(function (event) {
@@ -141,14 +149,16 @@ function clearAllTimeouts() {
 }
 
 function handleMouseDown(row, col) {
+  const node = grid[row][col];
+  if (node.isSource || node.isTarget) return;
   toggleWall(grid, row, col);
   mouseIsPressed = true;
 }
 
 function handleMouseEnter(row, col) {
-  if (mouseIsPressed) {
-    toggleWall(grid, row, col);
-  }
+  const node = grid[row][col];
+  if (node.isSource || node.isTarget) return;
+  if (mouseIsPressed) { toggleWall(grid, row, col); }
 }
 
 function handleMouseUp() {
@@ -159,9 +169,18 @@ function handleMouseLeave() {
   mouseIsPressed = false;
 }
 
+function handleDragStart(event, row, col) {
+  draggedNode = grid[row][col];
+}
+
+function handleDrop(event, row, col) {
+  event.preventDefault();
+  const nodeDraggedTo = grid[row][col];
+  swapNodes(draggedNode, nodeDraggedTo);
+}
+
 function toggleWall(grid, row, col) {
   const node = grid[row][col];
-  if (node.isSource || node.isTarget) return;
   const newNode = {
     ...node,
     isWall: !node.isWall,
@@ -171,6 +190,29 @@ function toggleWall(grid, row, col) {
   const extraClassName = newNode.isWall ? "node-wall" : "";
   $(id).attr("class", "node " + extraClassName);
 };
+
+function swapNodes(nodeA, nodeB) {
+  grid[nodeA.row][nodeA.col] = {
+    ...nodeB,
+    row: nodeA.row,
+    col: nodeA.col
+  }
+  grid[nodeB.row][nodeB.col] = {
+    ...nodeA,
+    row: nodeB.row,
+    col: nodeB.col
+  };
+
+  const movedNode = grid[nodeB.row][nodeB.col];
+  const { row, col, isSource, isTarget } = movedNode;
+  source = isSource ? { row, col } : source;
+  target = isTarget ? { row, col } : target;
+
+  // const idA = `#node-${nodeA.row}-${nodeA.col}`;
+  // const idB = `#node-${nodeB.row}-${nodeB.col}`;
+  // $(idA).replaceWith(displayNode(nodeA.row, nodeA.col));
+  // $(idB).replaceWith(displayNode(nodeB.row, nodeB.col));
+}
 
 $(".reset-button").click(function (event) {
   grid = [];
