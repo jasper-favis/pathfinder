@@ -4,11 +4,19 @@
 }
 
 .node-source {
-  background-color: #627175;
+  background-image: url("./images/start-icon.png");
+  background-color: rgb(0, 158, 158);
+  background-size: 100%;
 }
 
 .node-target {
-  background-color: #0674A4;
+  background-image: url("./images/bullseye-icon.png");
+  background-color: rgb(221, 88, 0);
+  background-size: 100%;
+}
+
+.node-wall {
+  background-color: rgb(12, 53, 71);
 }
 
 .node-visited {
@@ -23,7 +31,7 @@
 }
 
 .node-shortest-path {
-  animation-name: shortestPath;
+  animation-name: shortestPathAnimation;
   animation-duration: 1.5s;
   animation-timing-function: ease-out;
   animation-delay: 0;
@@ -46,7 +54,7 @@
 
   75% {
     transform: scale(1.2);
-    background-color: rgba(0, 217, 159, 0.75);
+    background-color: rgb(0, 255, 221);
   }
 
   100% {
@@ -55,7 +63,7 @@
   }
 }
 
-@keyframes shortestPath {
+@keyframes shortestPathAnimation {
   0% {
     transform: scale(0.6);
     background-color: rgb(255, 254, 106);

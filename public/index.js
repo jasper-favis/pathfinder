@@ -1,5 +1,6 @@
 import { dijkstra, getDijkstraPath } from "./dijkstra.js";
 
+
 const ROW_SIZE = 15;
 const COL_SIZE = 50;
 const NODE_SIZE = 25;
@@ -14,70 +15,15 @@ const nodeStyle = {
 let grid = [];
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
+let mouseIsPressed = false;
 
-function displayGrid() {
-  $(".grid").css(gridStyle);
-  $(".node").css(nodeStyle);
+$(document).ready(() => {
+  setup();
+});
 
-  if (grid && grid.length > 0) {
-    grid.map(row => {
-      if (row && row.length > 0) {
-        row.map(node => {
-          if (node) {
-            $(".grid").append(displayNode(node));
-          }
-        });
-      }
-    });
-  }
-}
-
-/* Generate a div for the given node.
-   Source, target, and wall nodes are distinguished by their
-   css class. Every node has an id based on their grid location. */
-function displayNode(node) {
-  const { row, col, isSource, isTarget } = node;
-  const extraClassName = isSource
-    ? "node-source"
-    : isTarget
-      ? "node-target"
-      : "";
-  const div = `
-    <div
-      id='node-${row}-${col}'
-      class='node ${extraClassName}'
-    ></div>
-  `;
-  return div;
-}
-
-/* Use css to visualize the exploration done by path-finding algorithm. 
-   Iterate through the visisted nodes and change their css class names 
-   to "node node-visited". */
-function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder) {
-  for (let i = 0; i < visitedNodesInOrder.length; i++) {
-    if (i === visitedNodesInOrder.length - 1) {
-      setTimeout(() => {
-        animateShortestPath(nodesInShortestPathOrder);
-      }, 10 * i);
-      return;
-    }
-    setTimeout(() => {
-      const node = visitedNodesInOrder[i];
-      document.getElementById(`node-${node.row}-${node.col}`).className =
-        'node node-visited';
-    }, 10 * i);
-  }
-}
-
-function animateShortestPath(nodesInShortestPathOrder) {
-  for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-    setTimeout(() => {
-      const node = nodesInShortestPathOrder[i];
-      document.getElementById(`node-${node.row}-${node.col}`).className =
-        'node node-shortest-path';
-    }, 50 * i);
-  }
+function setup() {
+  grid = createGrid();
+  displayGrid();
 }
 
 function createGrid() {
@@ -105,7 +51,48 @@ function createNode(row, col) {
   return node;
 }
 
-$(".activate-button").click(function (event) {
+function displayGrid() {
+  $(".grid").css(gridStyle).mouseleave(() => handleMouseLeave());
+  $(".node").css(nodeStyle);
+
+  if (grid && grid.length > 0) {
+    grid.map(row => {
+      if (row && row.length > 0) {
+        row.map(node => {
+          if (node) {
+            displayNode(node);
+          }
+        });
+      }
+    });
+  }
+}
+
+/* Create a div for the given node. Source, target, and wall nodes 
+   are distinguished by their css class. */
+function displayNode(node) {
+  const { row, col, isSource, isTarget, isWall } = node;
+  const extraClassName = isSource
+    ? "node-source"
+    : isTarget
+      ? "node-target"
+      : isWall
+        ? "node-wall"
+        : "";
+  const div = `
+    <div
+      id='node-${row}-${col}'
+      class='node ${extraClassName}'
+    ></div>
+  `;
+  $(".grid").append(
+    $(div).mousedown(() => handleMouseDown(row, col))
+      .mouseenter(() => handleMouseEnter(row, col))
+      .mouseup(() => handleMouseUp(row, col))
+  );
+}
+
+$(".start-button").click(function (event) {
   activateDijkstra();
 });
 
@@ -117,11 +104,96 @@ function activateDijkstra() {
   animateExploration(visitedNodesInOrder, nodesInShortestPathOrder);
 }
 
-function setup() {
-  grid = createGrid();
+/* Iterate through the visisted nodes and change their css class names 
+   to "node node-visited". */
+function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder) {
+  clearAnimations();
+  for (let i = 0; i < visitedNodesInOrder.length; i++) {
+    if (i === visitedNodesInOrder.length - 1) {
+      setTimeout(() => {
+        animateShortestPath(nodesInShortestPathOrder);
+      }, 10 * i);
+      return;
+    }
+    setTimeout(() => {
+      const node = visitedNodesInOrder[i];
+      if (node.isSource || node.isTarget) return;
+      document.getElementById(`node-${node.row}-${node.col}`).className =
+        'node node-visited';
+    }, 10 * i);
+  }
+}
+
+function animateShortestPath(nodesInShortestPathOrder) {
+  for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+    setTimeout(() => {
+      const node = nodesInShortestPathOrder[i];
+      if (node.isSource || node.isTarget) return;
+      document.getElementById(`node-${node.row}-${node.col}`).className =
+        'node node-shortest-path';
+    }, 50 * i);
+  }
+}
+
+function clearAllTimeouts() {
+  var id = window.setTimeout(function () { }, 0);
+  while (id--) { window.clearTimeout(id); }
+}
+
+function handleMouseDown(row, col) {
+  toggleWall(grid, row, col);
+  mouseIsPressed = true;
+}
+
+function handleMouseEnter(row, col) {
+  if (mouseIsPressed) {
+    toggleWall(grid, row, col);
+  }
+}
+
+function handleMouseUp() {
+  mouseIsPressed = false;
+}
+
+function handleMouseLeave() {
+  mouseIsPressed = false;
+}
+
+function toggleWall(grid, row, col) {
+  const node = grid[row][col];
+  if (node.isSource || node.isTarget) return;
+  const newNode = {
+    ...node,
+    isWall: !node.isWall,
+  };
+  grid[row][col] = newNode;
+  const id = `#node-${row}-${col}`;
+  const extraClassName = newNode.isWall ? "node-wall" : "";
+  $(id).attr("class", "node " + extraClassName);
+};
+
+$(".reset-button").click(function (event) {
+  grid = [];
+  clearAllTimeouts();
+  clearGrid();
+  setup();
+});
+
+function clearAnimations() {
+  const newGrid = grid.map(currRow => {
+    return currRow.map(node => {
+      const newNode = createNode(node.row, node.col);
+      newNode.isSource = node.isSource;
+      newNode.isTarget = node.isTarget;
+      newNode.isWall = node.isWall;
+      return newNode;
+    });
+  });
+  grid = newGrid;
+  clearGrid();
   displayGrid();
 }
 
-$(document).ready(() => {
-  setup();
-});
+function clearGrid() {
+  $(".grid").empty();
+}
