@@ -18,7 +18,6 @@
   font-size: 0.8rem;
   user-select: none;
   text-transform: uppercase;
-  border-radius: 5px;
 }
 
 .button:not(:last-child) {

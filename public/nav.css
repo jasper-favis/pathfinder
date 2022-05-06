@@ -1,0 +1,100 @@
+.nav-container {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  user-select: none;
+  background-color: rgb(21, 137, 141);
+}
+
+nav {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+  padding-bottom: 20px;
+  color: rgb(255, 255, 255);
+  display: flex;
+  align-items: flex-end;
+}
+
+.nav-logo {
+  padding-right: 30px;
+  height: 100%;
+  color: rgb(255, 255, 255);
+  text-transform: uppercase;
+  font-size: 1.2rem;
+}
+
+.nav-list {
+  height: 100%;
+  display: flex;
+}
+
+.nav-list>li {
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 100%;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.nav-list>li:hover {
+  cursor: pointer;
+  background-color: rgb(14, 87, 90);
+  transition-property: background-color;
+  transition-timing-function: ease-out;
+  transition-duration: 0.2s;
+}
+
+.dropdown-icon {
+  margin-left: 15px;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  background-image: url("./images/dropdown-icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.algorithm-button {
+  position: relative;
+}
+
+.algorithms-list {
+  display: none;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  flex-direction: column;
+  transform: translateY(calc(100% + 15px));
+  background-color: rgb(21, 137, 141);
+}
+
+.algorithms-list>li {
+  padding: 15px 20px;
+  font-size: 0.8rem;
+}
+
+.algorithms-list>li:hover {
+  cursor: pointer;
+  background-color: rgb(14, 87, 90);
+  transition-property: background-color;
+  transition-timing-function: ease-out;
+  transition-duration: 0.2s;
+}
+
+.displayBlock {
+  display: block;
+}
+
+.displayFlex {
+  display: flex;
+}
+
+.nav-button-bg-color {
+  background-color: rgb(14, 87, 90);
+}

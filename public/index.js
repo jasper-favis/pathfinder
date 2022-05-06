@@ -4,7 +4,7 @@ import { dijkstra, getDijkstraPath } from "./dijkstra.js";
 const ROW_SIZE = 25;
 const COL_SIZE = 50;
 const NODE_SIZE = 25;
-const CONTROLS_WIDTH = NODE_SIZE * COL_SIZE;
+const INNER_PAGE_WIDTH = NODE_SIZE * COL_SIZE;
 const gridStyle = {
   "grid-template-rows": `repeat(${ROW_SIZE}, ${NODE_SIZE}px)`,
   "grid-template-columns": `repeat(${COL_SIZE}, ${NODE_SIZE}px)`
@@ -28,17 +28,22 @@ let draggedNode;
 let speed = 1;
 
 $(document).ready(() => {
-  gridSetup();
-  controlsSetup();
+  setupGrid();
+  setupNav();
+  setupControls();
 });
 
-function gridSetup() {
+function setupGrid() {
   grid = createGrid();
   displayGrid();
 }
 
-function controlsSetup() {
-  $(".controls-container").css("width", `${CONTROLS_WIDTH}px`);
+function setupNav() {
+  $("nav").css("width", `${INNER_PAGE_WIDTH}px`);
+}
+
+function setupControls() {
+  $(".controls-container").css("width", `${INNER_PAGE_WIDTH}px`);
 }
 
 function createGrid() {
@@ -248,7 +253,7 @@ $(".reset-button").click(function (event) {
   grid = [];
   clearAllTimeouts();
   clearGrid();
-  gridSetup();
+  setupGrid();
 });
 
 function clearAnimations() {
@@ -279,3 +284,17 @@ $(".speed-list>li").click(function (event) {
   $(".speed-button>p").text(speedText);
   speed = speedMapping[speedText];
 })
+
+$(".algorithm-button").click(function () {
+  $(this).toggleClass("nav-button-bg-color");
+  $(".algorithms-list").toggleClass("displayFlex");
+})
+
+/* Detect click outside dropdown menu buttons to close menus. */
+$(document).click(function (event) {
+  const target = $(event.target);
+  if (!target.closest(".algorithm-button").length) {
+    $(".algorithms-list").removeClass("displayFlex")
+    $(".algorithm-button").removeClass("nav-button-bg-color");
+  }
+});
