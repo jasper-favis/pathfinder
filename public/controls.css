@@ -76,12 +76,12 @@
   border-style: solid;
   border-color: rgb(255, 255, 255);
   background-color: rgb(54, 54, 54);
-  z-index: 2;
+  z-index: 5;
 }
 
 .speed-list>li {
   padding: 15px 20px;
-  z-index: 10;
+  z-index: 5;
 }
 
 .speed-list>li:hover {
