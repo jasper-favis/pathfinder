@@ -16,6 +16,7 @@ let grid = [];
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
 let mouseIsPressed = false;
+let isAnimationInProgress = false;
 let draggedNode;
 
 $(document).ready(() => {
@@ -61,7 +62,7 @@ function displayGrid() {
       if (row && row.length > 0) {
         row.map(node => {
           if (node) {
-            $(".grid").append(displayNode(node));
+            $(".grid").append(displayNode("<div></div>", node));
           }
         });
       }
@@ -69,9 +70,8 @@ function displayGrid() {
   }
 }
 
-/* Create a div for the given node. Source, target, and wall nodes 
-   are distinguished by their css class. */
-function displayNode(node) {
+/* Nodes are distinguished by their id and css class. */
+function displayNode(id, node) {
   const { row, col, isSource, isTarget, isWall } = node;
   const extraClassName = isSource
     ? "node-source"
@@ -81,7 +81,7 @@ function displayNode(node) {
         ? "node-wall"
         : "";
 
-  const div = $(`<div></div>`)
+  const div = $(id)
     .attr("id", `node-${row}-${col}`)
     .attr("class", "node " + extraClassName)
     .attr("draggable", `${isSource || isTarget}`)
@@ -101,6 +101,7 @@ function displayNode(node) {
 }
 
 $(".start-button").click(function (event) {
+  if (isAnimationInProgress) return;
   activateDijkstra();
 });
 
@@ -112,11 +113,10 @@ function activateDijkstra() {
   animateExploration(visitedNodesInOrder, nodesInShortestPathOrder);
 }
 
-/* Iterate through the visisted nodes and change their css class names 
-   to "node node-visited". */
 function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder) {
+  disableStartButton(true);
   clearAnimations();
-  for (let i = 0; i < visitedNodesInOrder.length; i++) {
+  visitedNodesInOrder.forEach(function (node, i) {
     if (i === visitedNodesInOrder.length - 1) {
       setTimeout(() => {
         animateShortestPath(nodesInShortestPathOrder);
@@ -124,23 +124,27 @@ function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder) {
       return;
     }
     setTimeout(() => {
-      const node = visitedNodesInOrder[i];
       if (node.isSource || node.isTarget) return;
-      document.getElementById(`node-${node.row}-${node.col}`).className =
-        'node node-visited';
+      $(`#node-${node.row}-${node.col}`).addClass("node-visited");
     }, 10 * i);
-  }
+  })
 }
 
 function animateShortestPath(nodesInShortestPathOrder) {
-  for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+  nodesInShortestPathOrder.forEach(function (node, i) {
     setTimeout(() => {
-      const node = nodesInShortestPathOrder[i];
       if (node.isSource || node.isTarget) return;
-      document.getElementById(`node-${node.row}-${node.col}`).className =
-        'node node-shortest-path';
+      $(`#node-${node.row}-${node.col}`).addClass("node-shortest-path");
+      const isDisabled = !(i === nodesInShortestPathOrder.length - 2);
+      disableStartButton(isDisabled);
     }, 50 * i);
-  }
+  })
+}
+
+function disableStartButton(isDisabled) {
+  isAnimationInProgress = isDisabled;
+  const val = isDisabled ? "100%" : "0";
+  $(".start-button").css("filter", "grayscale(" + val + ")");
 }
 
 function clearAllTimeouts() {
@@ -208,13 +212,19 @@ function swapNodes(nodeA, nodeB) {
   source = isSource ? { row, col } : source;
   target = isTarget ? { row, col } : target;
 
-  // const idA = `#node-${nodeA.row}-${nodeA.col}`;
-  // const idB = `#node-${nodeB.row}-${nodeB.col}`;
-  // $(idA).replaceWith(displayNode(nodeA.row, nodeA.col));
-  // $(idB).replaceWith(displayNode(nodeB.row, nodeB.col));
+  const idA = `#node-${nodeA.row}-${nodeA.col}`;
+  const idB = `#node-${nodeB.row}-${nodeB.col}`;
+
+  displayNode(idA, grid[nodeA.row][nodeA.col]);
+  displayNode(idB, grid[nodeB.row][nodeB.col]);
+
+  const className = isSource ? "node node-source" : "node node-target";
+  $(idB).removeClass().addClass(className);
+  $(idA).removeClass().addClass("node");
 }
 
 $(".reset-button").click(function (event) {
+  isAnimationInProgress = false;
   grid = [];
   clearAllTimeouts();
   clearGrid();
