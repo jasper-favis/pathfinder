@@ -4,6 +4,7 @@ import { dijkstra, getDijkstraPath } from "./dijkstra.js";
 const ROW_SIZE = 25;
 const COL_SIZE = 50;
 const NODE_SIZE = 25;
+const CONTROLS_WIDTH = NODE_SIZE * COL_SIZE;
 const gridStyle = {
   "grid-template-rows": `repeat(${ROW_SIZE}, ${NODE_SIZE}px)`,
   "grid-template-columns": `repeat(${COL_SIZE}, ${NODE_SIZE}px)`
@@ -12,20 +13,32 @@ const nodeStyle = {
   "width": `${NODE_SIZE}px`,
   "height": `${NODE_SIZE}px`
 }
+const speedMapping = {
+  "0.5x": 1 / 0.5,
+  "1x": 1,
+  "2x": 1 / 2,
+  "4x": 1 / 4
+}
 let grid = [];
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
 let mouseIsPressed = false;
 let isAnimationInProgress = false;
 let draggedNode;
+let speed = 1;
 
 $(document).ready(() => {
-  setup();
+  gridSetup();
+  controlsSetup();
 });
 
-function setup() {
+function gridSetup() {
   grid = createGrid();
   displayGrid();
+}
+
+function controlsSetup() {
+  $(".controls-container").css("width", `${CONTROLS_WIDTH}px`);
 }
 
 function createGrid() {
@@ -85,16 +98,17 @@ function displayNode(id, node) {
     .attr("id", `node-${row}-${col}`)
     .attr("class", "node " + extraClassName)
     .attr("draggable", `${isSource || isTarget}`)
-    .mousedown(() => handleMouseDown(row, col))
-    .mouseenter(() => handleMouseEnter(row, col))
-    .mouseup(() => handleMouseUp(row, col))
+    .mousedown((event) => handleMouseDown(event, row, col))
+    .mouseenter((event) => handleMouseEnter(event, row, col))
+    .mouseup((event) => handleMouseUp(event, row, col))
 
   if (isSource || isTarget) {
     div
       .on("dragstart", (event) => handleDragStart(event, row, col));
   } else {
     div
-      .on("dragover", (event) => event.preventDefault())
+      .on("dragstart", () => false)
+      .on("dragover", (event) => handleDragOver(event))
       .on("drop", (event) => handleDrop(event, row, col))
   }
   return div;
@@ -110,34 +124,34 @@ function activateDijkstra() {
   const finish = grid[target.row][target.col];
   const visitedNodesInOrder = dijkstra(grid, start, finish);
   const nodesInShortestPathOrder = getDijkstraPath(finish);
-  animateExploration(visitedNodesInOrder, nodesInShortestPathOrder);
+  animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed);
 }
 
-function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder) {
+function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed) {
   disableStartButton(true);
   clearAnimations();
   visitedNodesInOrder.forEach(function (node, i) {
     if (i === visitedNodesInOrder.length - 1) {
       setTimeout(() => {
-        animateShortestPath(nodesInShortestPathOrder);
-      }, 10 * i);
+        animateShortestPath(nodesInShortestPathOrder, speed);
+      }, speed * 10 * i);
       return;
     }
     setTimeout(() => {
       if (node.isSource || node.isTarget) return;
       $(`#node-${node.row}-${node.col}`).addClass("node-visited");
-    }, 10 * i);
+    }, speed * 10 * i);
   })
 }
 
-function animateShortestPath(nodesInShortestPathOrder) {
+function animateShortestPath(nodesInShortestPathOrder, speed) {
   nodesInShortestPathOrder.forEach(function (node, i) {
     setTimeout(() => {
       if (node.isSource || node.isTarget) return;
       $(`#node-${node.row}-${node.col}`).addClass("node-shortest-path");
       const isDisabled = !(i === nodesInShortestPathOrder.length - 2);
       disableStartButton(isDisabled);
-    }, 50 * i);
+    }, speed * 50 * i);
   })
 }
 
@@ -152,20 +166,20 @@ function clearAllTimeouts() {
   while (id--) { window.clearTimeout(id); }
 }
 
-function handleMouseDown(row, col) {
+function handleMouseDown(event, row, col) {
   const node = grid[row][col];
   if (node.isSource || node.isTarget) return;
   toggleWall(grid, row, col);
   mouseIsPressed = true;
 }
 
-function handleMouseEnter(row, col) {
+function handleMouseEnter(event, row, col) {
   const node = grid[row][col];
   if (node.isSource || node.isTarget) return;
   if (mouseIsPressed) { toggleWall(grid, row, col); }
 }
 
-function handleMouseUp() {
+function handleMouseUp(event) {
   mouseIsPressed = false;
 }
 
@@ -177,9 +191,14 @@ function handleDragStart(event, row, col) {
   draggedNode = grid[row][col];
 }
 
-function handleDrop(event, row, col) {
+function handleDragOver(event) {
   event.preventDefault();
+}
+
+function handleDrop(event, row, col) {
   const nodeDraggedTo = grid[row][col];
+  if (draggedNode == null || nodeDraggedTo == null) return;
+  event.preventDefault();
   swapNodes(draggedNode, nodeDraggedTo);
 }
 
@@ -196,6 +215,7 @@ function toggleWall(grid, row, col) {
 };
 
 function swapNodes(nodeA, nodeB) {
+  if (nodeA == null || nodeB == null) return;
   grid[nodeA.row][nodeA.col] = {
     ...nodeB,
     row: nodeA.row,
@@ -224,11 +244,11 @@ function swapNodes(nodeA, nodeB) {
 }
 
 $(".reset-button").click(function (event) {
-  isAnimationInProgress = false;
+  disableStartButton(false);
   grid = [];
   clearAllTimeouts();
   clearGrid();
-  setup();
+  gridSetup();
 });
 
 function clearAnimations() {
@@ -249,3 +269,13 @@ function clearAnimations() {
 function clearGrid() {
   $(".grid").empty();
 }
+
+$(".speed-button").click(function () {
+  $(".speed-list").toggleClass("displayBlock");
+})
+
+$(".speed-list>li").click(function (event) {
+  const speedText = $(this).text();
+  $(".speed-button>p").text(speedText);
+  speed = speedMapping[speedText];
+})

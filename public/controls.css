@@ -1,0 +1,93 @@
+.controls-container {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.controls {
+  display: flex;
+}
+
+.button {
+  padding: 10px;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8rem;
+  user-select: none;
+  text-transform: uppercase;
+  border-radius: 5px;
+}
+
+.button:not(:last-child) {
+  margin-right: 15px;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.button:active {
+  transform: translateY(4px);
+}
+
+.start-button {
+  background-color: rgb(78, 218, 141);
+}
+
+.reset-button {
+  background-color: rgb(221, 96, 58);
+}
+
+.speed-button {
+  position: relative;
+  text-transform: lowercase;
+  background-color: rgb(54, 54, 54)
+}
+
+.play-icon {
+  width: 15px;
+  height: 15px;
+  display: block;
+  background-image: url("./images/play-icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.reset-icon {
+  margin-left: 10px;
+  width: 15px;
+  height: 15px;
+  display: block;
+  background-image: url("./images/clear-icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.speed-list {
+  display: none;
+  width: 80%;
+  position: absolute;
+  bottom: 0;
+  transform: translateY(120%);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(255, 255, 255);
+  background-color: rgb(54, 54, 54);
+  z-index: 2;
+}
+
+.speed-list>li {
+  padding: 15px 20px;
+  z-index: 10;
+}
+
+.speed-list>li:hover {
+  background-color: rgb(102, 102, 102);
+}
+
+.displayBlock {
+  display: block;
+}
