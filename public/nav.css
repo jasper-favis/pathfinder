@@ -63,7 +63,11 @@ nav {
   position: relative;
 }
 
-.algorithms-list {
+.maze-button {
+  position: relative;
+}
+
+.list {
   display: none;
   width: 100%;
   position: absolute;
@@ -74,12 +78,12 @@ nav {
   background-color: rgb(21, 137, 141);
 }
 
-.algorithms-list>li {
+.list>li {
   padding: 15px 20px;
   font-size: 0.8rem;
 }
 
-.algorithms-list>li:hover {
+.list>li:hover {
   cursor: pointer;
   background-color: rgb(14, 87, 90);
   transition-property: background-color;

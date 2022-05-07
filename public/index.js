@@ -1,4 +1,5 @@
-import { dijkstra, getDijkstraPath } from "./dijkstra.js";
+import { dijkstra, getDijkstraPath } from "./algorithms/dijkstra.js";
+import { recursiveDivision } from "./mazes/recusive_division.js";
 
 
 const ROW_SIZE = 25;
@@ -34,6 +35,7 @@ $(document).ready(() => {
 });
 
 function setupGrid() {
+  grid = [];
   grid = createGrid();
   displayGrid();
 }
@@ -249,12 +251,20 @@ function swapNodes(nodeA, nodeB) {
 }
 
 $(".reset-button").click(function (event) {
+  resetGrid();
+});
+
+function resetGrid() {
   disableStartButton(false);
-  grid = [];
   clearAllTimeouts();
   clearGrid();
   setupGrid();
-});
+}
+
+function resetSourceAndTarget() {
+  source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
+  target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
+}
 
 function clearAnimations() {
   const newGrid = grid.map(currRow => {
@@ -275,7 +285,7 @@ function clearGrid() {
   $(".grid").empty();
 }
 
-$(".speed-button").click(function () {
+$(".speed-button").click(function (event) {
   $(".speed-list").toggleClass("displayBlock");
 })
 
@@ -285,10 +295,42 @@ $(".speed-list>li").click(function (event) {
   speed = speedMapping[speedText];
 })
 
-$(".algorithm-button").click(function () {
+$(".algorithm-button").click(function (event) {
   $(this).toggleClass("nav-button-bg-color");
   $(".algorithms-list").toggleClass("displayFlex");
 })
+
+$(".maze-button").click(function (event) {
+  $(this).toggleClass("nav-button-bg-color");
+  $(".maze-list").toggleClass("displayFlex");
+})
+
+$("#maze-1").click(function (event) {
+  resetSourceAndTarget();
+  resetGrid();
+  const maze = generateRecursiveDivision();
+  animateMaze(maze);
+  // clearGrid();
+  // displayGrid();
+})
+
+function generateRecursiveDivision() {
+  const row = 0;
+  const col = 0;
+  const height = grid.length;
+  const width = grid[0].length;
+  return recursiveDivision({ grid, row, col, width, height });
+}
+
+function animateMaze(maze) {
+  disableStartButton(true);
+  clearAnimations();
+  maze.forEach(function (node, i) {
+    setTimeout(() => {
+      $(`#node-${node.row}-${node.col}`).addClass("node-wall");
+    }, 10 * i);
+  })
+}
 
 /* Detect click outside dropdown menu buttons to close menus. */
 $(document).click(function (event) {
@@ -297,4 +339,15 @@ $(document).click(function (event) {
     $(".algorithms-list").removeClass("displayFlex")
     $(".algorithm-button").removeClass("nav-button-bg-color");
   }
+  if (!target.closest(".maze-button").length) {
+    $(".maze-list").removeClass("displayFlex")
+    $(".maze-button").removeClass("nav-button-bg-color");
+  }
 });
+
+
+function testPrint(arr) {
+  for (let x of arr) {
+    console.log(x);
+  }
+}
