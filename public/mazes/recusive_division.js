@@ -88,19 +88,16 @@ function buildWallPerimeter(grid, width, height) {
     grid[0][i].isWall = true;
     perimeterWall.push(grid[0][i]);
   }
-
   /* Right edge. */
   for (let i = 0; i < height; i++) {
     grid[i][width - 1].isWall = true;
     perimeterWall.push(grid[i][width - 1]);
   }
-
   /* Bottom edge. */
   for (let i = 0; i < width; i++) {
     grid[height - 1][i].isWall = true;
     perimeterWall.push(grid[height - 1][i]);
   }
-
   /* Left edge. */
   for (let i = 0; i < height; i++) {
     grid[i][0].isWall = true;
@@ -108,16 +105,4 @@ function buildWallPerimeter(grid, width, height) {
   }
 
   return perimeterWall;
-
-  // /* Top and bottom edges. */
-  // for (let i = 0; i < width; i++) {
-  //   grid[0][i].isWall = true;
-  //   grid[height - 1][i].isWall = true;
-  // }
-
-  // /* Left and right edges. */
-  // for (let i = 0; i < height; i++) {
-  //   grid[i][0].isWall = true;
-  //   grid[i][width - 1].isWall = true;
-  // }
 }
