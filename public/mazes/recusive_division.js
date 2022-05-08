@@ -81,28 +81,23 @@ function randomRange(min, max) {
 }
 
 function buildWallPerimeter(grid, width, height) {
+  /* Top, Right, Bottom, Left */
   let perimeterWall = [];
-
-  /* Top edge. */
   for (let i = 0; i < width; i++) {
     grid[0][i].isWall = true;
     perimeterWall.push(grid[0][i]);
   }
-  /* Right edge. */
   for (let i = 0; i < height; i++) {
     grid[i][width - 1].isWall = true;
     perimeterWall.push(grid[i][width - 1]);
   }
-  /* Bottom edge. */
-  for (let i = 0; i < width; i++) {
+  for (let i = width - 1; i >= 0; i--) {
     grid[height - 1][i].isWall = true;
     perimeterWall.push(grid[height - 1][i]);
   }
-  /* Left edge. */
-  for (let i = 0; i < height; i++) {
+  for (let i = height - 1; i >= 0; i--) {
     grid[i][0].isWall = true;
     perimeterWall.push(grid[i][0]);
   }
-
   return perimeterWall;
 }

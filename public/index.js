@@ -1,7 +1,6 @@
 import { dijkstra, getDijkstraPath } from "./algorithms/dijkstra.js";
 import { recursiveDivision } from "./mazes/recusive_division.js";
 
-
 const ROW_SIZE = 25;
 const COL_SIZE = 50;
 const NODE_SIZE = 25;
@@ -33,6 +32,49 @@ $(document).ready(() => {
   setupNav();
   setupControls();
 });
+
+/* Detect click outside dropdown menu buttons to close menus. */
+$(document).click(function (event) {
+  hideDropdownMenu(event);
+});
+
+$(".play-button").click(function (event) {
+  if (isAnimationInProgress) return;
+  activateDijkstra();
+});
+
+$(".clear-button").click(function (event) {
+  resetGrid();
+});
+
+$(".speed-button").click(function (event) {
+  $(".speed-list").toggleClass("displayBlock");
+})
+
+$(".speed-list>li").click(function (event) {
+  const speedText = $(this).text();
+  $(".speed-button>p").text(speedText);
+  speed = speedMapping[speedText];
+})
+
+$(".algorithm-button").click(function (event) {
+  $(this).toggleClass("nav-button-bg-color");
+  $(".algorithms-list").toggleClass("displayFlex");
+})
+
+$(".maze-button").click(function (event) {
+  $(this).toggleClass("nav-button-bg-color");
+  $(".maze-list").toggleClass("displayFlex");
+})
+
+$("#maze-1").click(function (event) {
+  resetSourceAndTarget();
+  resetGrid();
+  const maze = generateRecursiveDivision();
+  animateMaze(maze);
+  // clearGrid();
+  // displayGrid();
+})
 
 function setupGrid() {
   grid = [];
@@ -74,57 +116,45 @@ function createNode(row, col) {
 }
 
 function displayGrid() {
-  $(".grid").css(gridStyle).mouseleave(() => handleMouseLeave());
+  if (!!grid && grid.length == 0) return;
+  $(".grid").css(gridStyle).mouseleave((event) => handleMouseLeave(event));
   $(".node").css(nodeStyle);
 
-  if (grid && grid.length > 0) {
-    grid.map(row => {
-      if (row && row.length > 0) {
-        row.map(node => {
-          if (node) {
-            $(".grid").append(displayNode("<div></div>", node));
-          }
-        });
-      }
-    });
+  for (let row of grid) {
+    for (let node of row) {
+      $(".grid").append(displayNode("<div></div>", node));
+    }
   }
 }
 
-/* Nodes are distinguished by their id and css class. */
+/* Nodes are distinguished by their id and class. */
 function displayNode(id, node) {
   const { row, col, isSource, isTarget, isWall } = node;
+  // const extraClassName = isSource
+  //   ? "node-source"
+  //   : isTarget
+  //     ? "node-target"
+  //     : isWall
+  //       ? "node-wall"
+  //       : "";
   const extraClassName = isSource
     ? "node-source"
     : isTarget
       ? "node-target"
-      : isWall
-        ? "node-wall"
-        : "";
+      : "";
 
   const div = $(id)
     .attr("id", `node-${row}-${col}`)
-    .attr("class", "node " + extraClassName)
+    .attr("class", `node ${extraClassName}`)
     .attr("draggable", `${isSource || isTarget}`)
+    .on("dragstart", (event) => handleDragStart(event, row, col))
+    .on("dragover", (event) => handleDragOver(event))
+    .on("drop", (event) => handleDrop(event, row, col))
     .mousedown((event) => handleMouseDown(event, row, col))
     .mouseenter((event) => handleMouseEnter(event, row, col))
     .mouseup((event) => handleMouseUp(event, row, col))
-
-  if (isSource || isTarget) {
-    div
-      .on("dragstart", (event) => handleDragStart(event, row, col));
-  } else {
-    div
-      .on("dragstart", () => false)
-      .on("dragover", (event) => handleDragOver(event))
-      .on("drop", (event) => handleDrop(event, row, col))
-  }
   return div;
 }
-
-$(".start-button").click(function (event) {
-  if (isAnimationInProgress) return;
-  activateDijkstra();
-});
 
 function activateDijkstra() {
   const start = grid[source.row][source.col];
@@ -137,7 +167,7 @@ function activateDijkstra() {
 function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed) {
   disableStartButton(true);
   clearAnimations();
-  visitedNodesInOrder.forEach(function (node, i) {
+  visitedNodesInOrder.forEach((node, i) => {
     if (i === visitedNodesInOrder.length - 1) {
       setTimeout(() => {
         animateShortestPath(nodesInShortestPathOrder, speed);
@@ -152,25 +182,12 @@ function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed
 }
 
 function animateShortestPath(nodesInShortestPathOrder, speed) {
-  nodesInShortestPathOrder.forEach(function (node, i) {
+  nodesInShortestPathOrder.forEach((node, i) => {
     setTimeout(() => {
-      if (node.isSource || node.isTarget) return;
       $(`#node-${node.row}-${node.col}`).addClass("node-shortest-path");
-      const isDisabled = !(i === nodesInShortestPathOrder.length - 2);
-      disableStartButton(isDisabled);
+      disableStartButton(!(i === nodesInShortestPathOrder.length - 1));
     }, speed * 50 * i);
   })
-}
-
-function disableStartButton(isDisabled) {
-  isAnimationInProgress = isDisabled;
-  const val = isDisabled ? "100%" : "0";
-  $(".start-button").css("filter", "grayscale(" + val + ")");
-}
-
-function clearAllTimeouts() {
-  var id = window.setTimeout(function () { }, 0);
-  while (id--) { window.clearTimeout(id); }
 }
 
 function handleMouseDown(event, row, col) {
@@ -190,11 +207,13 @@ function handleMouseUp(event) {
   mouseIsPressed = false;
 }
 
-function handleMouseLeave() {
+function handleMouseLeave(event) {
   mouseIsPressed = false;
 }
 
 function handleDragStart(event, row, col) {
+  const node = grid[row][col];
+  if (!node.isSource && !node.isTarget) return event.preventDefault();
   draggedNode = grid[row][col];
 }
 
@@ -218,7 +237,7 @@ function toggleWall(grid, row, col) {
   grid[row][col] = newNode;
   const id = `#node-${row}-${col}`;
   const extraClassName = newNode.isWall ? "node-wall" : "";
-  $(id).attr("class", "node " + extraClassName);
+  $(id).attr("class", `node ${extraClassName}`);
 };
 
 function swapNodes(nodeA, nodeB) {
@@ -250,13 +269,9 @@ function swapNodes(nodeA, nodeB) {
   $(idA).removeClass().addClass("node");
 }
 
-$(".reset-button").click(function (event) {
-  resetGrid();
-});
-
 function resetGrid() {
   disableStartButton(false);
-  clearAllTimeouts();
+  stopAnimations();
   clearGrid();
   setupGrid();
 }
@@ -266,53 +281,43 @@ function resetSourceAndTarget() {
   target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
 }
 
-function clearAnimations() {
-  const newGrid = grid.map(currRow => {
-    return currRow.map(node => {
-      const newNode = createNode(node.row, node.col);
-      newNode.isSource = node.isSource;
-      newNode.isTarget = node.isTarget;
-      newNode.isWall = node.isWall;
-      return newNode;
-    });
-  });
-  grid = newGrid;
-  clearGrid();
-  displayGrid();
+function disableStartButton(isDisabled) {
+  isAnimationInProgress = isDisabled;
+  const val = isDisabled ? "100%" : "0";
+  $(".play-button").css("filter", "grayscale(" + val + ")");
 }
 
 function clearGrid() {
   $(".grid").empty();
 }
 
-$(".speed-button").click(function (event) {
-  $(".speed-list").toggleClass("displayBlock");
-})
+function stopAnimations() {
+  var id = window.setTimeout(function () { }, 0);
+  while (id--) { window.clearTimeout(id); }
+}
 
-$(".speed-list>li").click(function (event) {
-  const speedText = $(this).text();
-  $(".speed-button>p").text(speedText);
-  speed = speedMapping[speedText];
-})
+function clearAnimations() {
+  for (let currRow of grid) {
+    for (let node of currRow) {
+      node.distance = Infinity;
+      node.isVisited = false;
+      node.prevNode = null;
+      $(`#node-${node.row}-${node.col}`).removeClass("node-visited");
+      $(`#node-${node.row}-${node.col}`).removeClass("node-shortest-path");
+    }
+  }
+}
 
-$(".algorithm-button").click(function (event) {
-  $(this).toggleClass("nav-button-bg-color");
-  $(".algorithms-list").toggleClass("displayFlex");
-})
-
-$(".maze-button").click(function (event) {
-  $(this).toggleClass("nav-button-bg-color");
-  $(".maze-list").toggleClass("displayFlex");
-})
-
-$("#maze-1").click(function (event) {
-  resetSourceAndTarget();
-  resetGrid();
-  const maze = generateRecursiveDivision();
-  animateMaze(maze);
-  // clearGrid();
-  // displayGrid();
-})
+function animateMaze(maze) {
+  disableStartButton(true);
+  clearAnimations();
+  maze.forEach((node, i) => {
+    setTimeout(() => {
+      $(`#node-${node.row}-${node.col}`).addClass("node-wall");
+      disableStartButton(!(i === maze.length - 1));
+    }, 20 * i);
+  })
+}
 
 function generateRecursiveDivision() {
   const row = 0;
@@ -322,18 +327,7 @@ function generateRecursiveDivision() {
   return recursiveDivision({ grid, row, col, width, height });
 }
 
-function animateMaze(maze) {
-  disableStartButton(true);
-  clearAnimations();
-  maze.forEach(function (node, i) {
-    setTimeout(() => {
-      $(`#node-${node.row}-${node.col}`).addClass("node-wall");
-    }, 10 * i);
-  })
-}
-
-/* Detect click outside dropdown menu buttons to close menus. */
-$(document).click(function (event) {
+function hideDropdownMenu(event) {
   const target = $(event.target);
   if (!target.closest(".algorithm-button").length) {
     $(".algorithms-list").removeClass("displayFlex")
@@ -342,12 +336,5 @@ $(document).click(function (event) {
   if (!target.closest(".maze-button").length) {
     $(".maze-list").removeClass("displayFlex")
     $(".maze-button").removeClass("nav-button-bg-color");
-  }
-});
-
-
-function testPrint(arr) {
-  for (let x of arr) {
-    console.log(x);
   }
 }

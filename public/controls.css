@@ -32,11 +32,11 @@
   transform: translateY(4px);
 }
 
-.start-button {
+.play-button {
   background-color: rgb(78, 218, 141);
 }
 
-.reset-button {
+.clear-button {
   background-color: rgb(221, 96, 58);
 }
 
@@ -51,16 +51,6 @@
   height: 15px;
   display: block;
   background-image: url("./images/play-icon.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-.reset-icon {
-  margin-left: 10px;
-  width: 15px;
-  height: 15px;
-  display: block;
-  background-image: url("./images/clear-icon.png");
   background-size: contain;
   background-repeat: no-repeat;
 }
