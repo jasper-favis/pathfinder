@@ -129,14 +129,7 @@ function displayGrid() {
 
 /* Nodes are distinguished by their id and class. */
 function displayNode(id, node) {
-  const { row, col, isSource, isTarget, isWall } = node;
-  // const extraClassName = isSource
-  //   ? "node-source"
-  //   : isTarget
-  //     ? "node-target"
-  //     : isWall
-  //       ? "node-wall"
-  //       : "";
+  const { row, col, isSource, isTarget } = node;
   const extraClassName = isSource
     ? "node-source"
     : isTarget
@@ -260,10 +253,8 @@ function swapNodes(nodeA, nodeB) {
 
   const idA = `#node-${nodeA.row}-${nodeA.col}`;
   const idB = `#node-${nodeB.row}-${nodeB.col}`;
-
   displayNode(idA, grid[nodeA.row][nodeA.col]);
   displayNode(idB, grid[nodeB.row][nodeB.col]);
-
   const className = isSource ? "node node-source" : "node node-target";
   $(idB).removeClass().addClass(className);
   $(idA).removeClass().addClass("node");
@@ -311,11 +302,17 @@ function clearAnimations() {
 function animateMaze(maze) {
   disableStartButton(true);
   clearAnimations();
+
   maze.forEach((node, i) => {
     setTimeout(() => {
+
+      // FOR DEBUGGIN PURPOSES
+      console.log(`${i} node: (${node.row}, ${node.col})`)
+      $(`#node-${node.row}-${node.col}`).css("background-color", "gray");
+
       $(`#node-${node.row}-${node.col}`).addClass("node-wall");
       disableStartButton(!(i === maze.length - 1));
-    }, 20 * i);
+    }, 10 * i);
   })
 }
 
@@ -324,7 +321,8 @@ function generateRecursiveDivision() {
   const col = 0;
   const height = grid.length;
   const width = grid[0].length;
-  return recursiveDivision({ grid, row, col, width, height });
+  const maze = recursiveDivision({ grid, row, col, width, height });
+  return maze;
 }
 
 function hideDropdownMenu(event) {
