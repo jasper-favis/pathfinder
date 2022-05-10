@@ -7,9 +7,10 @@
   <title>Pathfinder</title>
   <link type="text/css" rel="stylesheet" href="index.css" />
   <link type="text/css" rel="stylesheet" href="nav.css" />
-  <link type="text/css" rel="stylesheet" href="controls.css" />
+  <link type="text/css" rel="stylesheet" href="article.css" />
   <link type="text/css" rel="stylesheet" href="grid.css" />
   <link type="text/css" rel="stylesheet" href="node.css" />
+  <link type="text/css" rel="stylesheet" href="controls.css" />
 </head>
 <body>
   <div class="page-container">
@@ -24,8 +25,7 @@
             <ul class="algorithms-list list">
               <li id="algo-1">A* Search</li>
               <li id="algo-2">Dijkstra</li>
-              <li id="algo-3">Breadth-first Search</li>
-              <li id="algo-4">Dept-first Search</li>
+              <li id="algo-3">Depth-first Search</li>
             </ul>
            </li>
           <li class="maze-button nav">
@@ -39,6 +39,13 @@
       </nav>
     </div>
     <div class="content-wrap">
+      <article>
+        <p class="algorithm-name"></p>
+      </article>
+      <div class="grid-container">
+        <div class="grid">
+        </div>
+      </div>
       <div class="controls-container">
         <div class="controls">
           <div class="play-button button">
@@ -56,10 +63,6 @@
               <li>4x</li>
             </ul>
           </div>
-        </div>
-      </div>
-      <div class="grid-container">
-        <div class="grid">
         </div>
       </div>
     </div>

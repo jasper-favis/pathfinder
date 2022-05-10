@@ -1,3 +1,4 @@
+import { aStartSearch, getShortestPath } from "./algorithms/aStarSearch.js";
 import { dijkstra, getDijkstraPath } from "./algorithms/dijkstra.js";
 import { recursiveDivision } from "./mazes/recusive_division.js";
 
@@ -22,6 +23,7 @@ const speedMapping = {
 let grid = [];
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
+let algorithmName = "Dijkstra";
 let mouseIsPressed = false;
 let isAnimationInProgress = false;
 let draggedNode;
@@ -30,6 +32,7 @@ let speed = 1;
 $(document).ready(() => {
   setupGrid();
   setupNav();
+  setupArticle();
   setupControls();
 });
 
@@ -40,7 +43,19 @@ $(document).click(function (event) {
 
 $(".play-button").click(function (event) {
   if (isAnimationInProgress) return;
-  activateDijkstra();
+  switch (algorithmName) {
+    case "A* Search":
+      activateAStar();
+      break;
+    case "Dijkstra":
+      activateDijkstra();
+      break;
+    case "Depth-first Search":
+      console.log("Depth-first Chosen");
+      break;
+    default:
+      activateDijkstra();
+  }
 });
 
 $(".clear-button").click(function (event) {
@@ -62,6 +77,11 @@ $(".algorithm-button").click(function (event) {
   $(".algorithms-list").toggleClass("displayFlex");
 })
 
+$(".algorithms-list>li").click(function (event) {
+  algorithmName = $(this).text();
+  $(".algorithm-name").text(algorithmName);
+})
+
 $(".maze-button").click(function (event) {
   $(this).toggleClass("nav-button-bg-color");
   $(".maze-list").toggleClass("displayFlex");
@@ -72,8 +92,6 @@ $("#maze-1").click(function (event) {
   resetGrid();
   const maze = generateRecursiveDivision();
   animateMaze(maze);
-  // clearGrid();
-  // displayGrid();
 })
 
 function setupGrid() {
@@ -84,6 +102,10 @@ function setupGrid() {
 
 function setupNav() {
   $("nav").css("width", `${INNER_PAGE_WIDTH}px`);
+}
+
+function setupArticle() {
+  $(".algorithm-name").text(algorithmName);
 }
 
 function setupControls() {
@@ -106,6 +128,7 @@ function createNode(row, col) {
     row,
     col,
     distance: Infinity,
+    heuristic: Infinity,
     isSource: (row === source.row && col === source.col),
     isTarget: (row === target.row && col === target.col),
     isVisited: false,
@@ -154,6 +177,14 @@ function activateDijkstra() {
   const finish = grid[target.row][target.col];
   const visitedNodesInOrder = dijkstra(grid, start, finish);
   const nodesInShortestPathOrder = getDijkstraPath(finish);
+  animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed);
+}
+
+function activateAStar() {
+  const start = grid[source.row][source.col];
+  const finish = grid[target.row][target.col];
+  const visitedNodesInOrder = aStartSearch(grid, start, finish);
+  const nodesInShortestPathOrder = getShortestPath(finish);
   animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed);
 }
 
@@ -291,6 +322,7 @@ function clearAnimations() {
   for (let currRow of grid) {
     for (let node of currRow) {
       node.distance = Infinity;
+      node.heuristic = Infinity;
       node.isVisited = false;
       node.prevNode = null;
       $(`#node-${node.row}-${node.col}`).removeClass("node-visited");
