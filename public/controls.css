@@ -14,10 +14,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   font-size: 0.8rem;
   user-select: none;
   text-transform: uppercase;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .button:not(:last-child) {
@@ -26,24 +28,18 @@
 
 .button:hover {
   cursor: pointer;
+  transition-property: background-color, border-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+}
+
+.button:not(:last-child):hover {
+  border-color: rgba(211, 211, 211, 0.87);
+  background-color: rgba(211, 211, 211, 0.87);
 }
 
 .button:active {
   transform: translateY(4px);
-}
-
-.play-button {
-  background-color: rgb(78, 218, 141);
-}
-
-.clear-button {
-  background-color: rgb(221, 96, 58);
-}
-
-.speed-button {
-  position: relative;
-  text-transform: lowercase;
-  background-color: rgb(54, 54, 54)
 }
 
 .play-icon {
@@ -55,9 +51,16 @@
   background-repeat: no-repeat;
 }
 
+.speed-button {
+  position: relative;
+  color: white;
+  text-transform: lowercase;
+  background-color: rgb(54, 54, 54)
+}
+
 .speed-list {
   display: none;
-  width: 80%;
+  width: 100%;
   position: absolute;
   top: 0;
   transform: translateY(-110%);
@@ -75,6 +78,9 @@
 
 .speed-list>li:hover {
   background-color: rgb(102, 102, 102);
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
 }
 
 .displayBlock {

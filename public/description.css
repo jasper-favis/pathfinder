@@ -1,0 +1,14 @@
+.description-container {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+}
+
+.algorithm-name {
+  padding: 10px 20px;
+  font-size: 1rem;
+}

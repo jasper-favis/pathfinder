@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,600&family=Hind:wght@300;400&family=Montserrat+Subrayada&family=Poppins:wght@200;500&family=Source+Sans+Pro:wght@200&family=Teko&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,600&family=Hind:wght@300;400&family=Montserrat+Subrayada&family=Poppins:wght@200;500&family=Source+Sans+Pro:wght@200&family=Teko&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;500&family=Source+Sans+Pro:wght@200;300;400&display=swap');
+
 
 * {
   margin: 0;
@@ -22,8 +24,8 @@ body {
   justify-content: center;
   align-items: center;
   font-family: var(--primary-font);
-  letter-spacing: 0.2rem;
-  font-weight: 600;
+  letter-spacing: 0.1rem;
+  font-weight: 400;
 }
 
 .page-container {

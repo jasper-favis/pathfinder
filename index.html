@@ -7,10 +7,11 @@
   <title>Pathfinder</title>
   <link type="text/css" rel="stylesheet" href="index.css" />
   <link type="text/css" rel="stylesheet" href="nav.css" />
-  <link type="text/css" rel="stylesheet" href="article.css" />
+  <link type="text/css" rel="stylesheet" href="description.css" />
   <link type="text/css" rel="stylesheet" href="grid.css" />
   <link type="text/css" rel="stylesheet" href="node.css" />
   <link type="text/css" rel="stylesheet" href="controls.css" />
+  <link type="text/css" rel="stylesheet" href="tutorial.css" />
 </head>
 <body>
   <div class="page-container">
@@ -24,7 +25,7 @@
             <div class="dropdown-icon"></div>
             <ul class="algorithms-list list">
               <li id="algo-1">A* Search</li>
-              <li id="algo-2">Dijkstra</li>
+              <li id="algo-2">Dijkstra's Algorithm</li>
               <li id="algo-3">Depth-first Search</li>
             </ul>
            </li>
@@ -39,9 +40,12 @@
       </nav>
     </div>
     <div class="content-wrap">
-      <article>
-        <p class="algorithm-name"></p>
-      </article>
+      <div class="description-container">
+        <div class="description">
+          <div class="algorithm-name"></div>
+          <div class="text"></div>
+        </div>
+      </div>
       <div class="grid-container">
         <div class="grid">
         </div>
@@ -62,6 +66,20 @@
               <li>2x</li>
               <li>4x</li>
             </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tutorial-outer-container">
+      <div class="tutorial-inner-container">
+        <div class="tutorial ">
+          <div class="tutorial-header"></div>
+          <div class="tutorial-text"></div>
+          <div class="tutorial-img"></div>
+          <div class="tutorial-buttons">
+            <div class="skip-button tut-button">Skip Tutorial</div>
+            <div class="previous-button tut-button">previous</div>
+            <div class="next-button tut-button">next</div>
           </div>
         </div>
       </div>

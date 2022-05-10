@@ -1,5 +1,6 @@
 import { aStartSearch, getShortestPath } from "./algorithms/aStarSearch.js";
 import { dijkstra, getDijkstraPath } from "./algorithms/dijkstra.js";
+import { depthFirstSearch, getPath } from "./depthFirstSearch.js";
 import { recursiveDivision } from "./mazes/recusive_division.js";
 
 const ROW_SIZE = 25;
@@ -23,7 +24,7 @@ const speedMapping = {
 let grid = [];
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
-let algorithmName = "Dijkstra";
+let algorithmName = "Dijkstra's Algorithm";
 let mouseIsPressed = false;
 let isAnimationInProgress = false;
 let draggedNode;
@@ -31,8 +32,9 @@ let speed = 1;
 
 $(document).ready(() => {
   setupGrid();
+  setupTutorial();
   setupNav();
-  setupArticle();
+  setupDescription();
   setupControls();
 });
 
@@ -47,16 +49,24 @@ $(".play-button").click(function (event) {
     case "A* Search":
       activateAStar();
       break;
-    case "Dijkstra":
+    case "Dijkstra's Algorithm":
       activateDijkstra();
       break;
     case "Depth-first Search":
-      console.log("Depth-first Chosen");
+      activateDepthFirstSearch();
       break;
     default:
       activateDijkstra();
   }
 });
+
+$(".tutorial-button").click(function (event) {
+  $(".tutorial-outer-container").addClass("displayFlex");
+})
+
+$(".skip-button").click(function (event) {
+  $(".tutorial-outer-container").removeClass("displayFlex");
+})
 
 $(".clear-button").click(function (event) {
   resetGrid();
@@ -100,11 +110,29 @@ function setupGrid() {
   displayGrid();
 }
 
+function setupTutorial() {
+  $(".tutorial-header").text("Pathfinder");
+  const greeting = `
+    Welcome to Pathfinder! A web application for visualizing pathfinding algorithms.
+    <br>
+    <br>
+    What is a pathfinding algorithm?
+    <br>
+    A pathfinding algorithm finds a route, in some cases, the shortest route between two points.
+    With this application, you'll be able to visualize the different ways these algorithms explore their
+    surroundings in search for a target.
+  `;
+  const imgURL = "./images/path.png";
+  $(".tutorial-text").html(greeting);
+  $(".tutorial-img").css("background-image", `url('${imgURL}')`);
+  $(".tutorial-outer-container").addClass("displayFlex");
+}
+
 function setupNav() {
   $("nav").css("width", `${INNER_PAGE_WIDTH}px`);
 }
 
-function setupArticle() {
+function setupDescription() {
   $(".algorithm-name").text(algorithmName);
 }
 
@@ -186,6 +214,14 @@ function activateAStar() {
   const visitedNodesInOrder = aStartSearch(grid, start, finish);
   const nodesInShortestPathOrder = getShortestPath(finish);
   animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed);
+}
+
+function activateDepthFirstSearch() {
+  const start = grid[source.row][source.col];
+  const finish = grid[target.row][target.col];
+  const visitedNodesInOrder = depthFirstSearch(grid, start, finish);
+  const nodePath = getPath(finish);
+  animateExploration(visitedNodesInOrder, nodePath, speed);
 }
 
 function animateExploration(visitedNodesInOrder, nodesInShortestPathOrder, speed) {

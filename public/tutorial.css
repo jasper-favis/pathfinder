@@ -1,0 +1,87 @@
+.tutorial-outer-container {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  z-index: 10;
+}
+
+.tutorial-inner-container {
+  margin-top: 10%;
+  display: flex;
+  width: 650px;
+  height: 550px;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(37, 86, 105);
+}
+
+.tutorial {
+  position: relative;
+  width: 610px;
+  height: 510px;
+  font-weight: 400;
+}
+
+.tutorial-header {
+  padding-top: 40px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(0, 0, 0, 0.3);
+}
+
+.tutorial-text {
+  padding: 20px;
+  font-size: 0.9rem;
+  letter-spacing: none;
+}
+
+.tutorial-img {
+  margin: 20px auto;
+  display: block;
+  width: 160px;
+  height: 160px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.tutorial-buttons {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tut-button {
+  user-select: none;
+  cursor: pointer;
+  padding: 10px 15px;
+  color: white;
+  font-size: 0.8rem;
+  background-color: rgb(37, 86, 105);
+}
+
+.tut-button:hover {
+  background-color: rgb(65, 149, 182);
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+}
+
+.tut-button:not(:last-child) {
+  margin-right: 15px;
+}
+
+.displayFlex {
+  display: flex;
+}

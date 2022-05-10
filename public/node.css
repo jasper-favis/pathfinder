@@ -1,6 +1,6 @@
 .node {
   display: inline-block;
-  outline: 1px solid rgba(0, 0, 0, 0.3);
+  outline: 1px solid rgba(108, 188, 219, 0.5);
 }
 
 .node-source {

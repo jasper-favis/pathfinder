@@ -38,12 +38,13 @@ nav {
   padding-right: 20px;
   height: 100%;
   font-size: 0.9rem;
+  font-weight: 400;
   white-space: nowrap;
 }
 
 .nav-list>li:hover {
   cursor: pointer;
-  background-color: rgb(37, 86, 105);
+  background-color: rgb(65, 149, 182);
   transition-property: background-color;
   transition-timing-function: ease-out;
   transition-duration: 0.2s;
@@ -86,7 +87,7 @@ nav {
 
 .list>li:hover {
   cursor: pointer;
-  background-color: rgb(25, 57, 70);
+  background-color: rgb(65, 149, 182);
   transition-property: background-color;
   transition-timing-function: ease-out;
   transition-duration: 0.2s;
