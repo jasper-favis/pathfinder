@@ -302,14 +302,8 @@ function clearAnimations() {
 function animateMaze(maze) {
   disableStartButton(true);
   clearAnimations();
-
   maze.forEach((node, i) => {
     setTimeout(() => {
-
-      // FOR DEBUGGIN PURPOSES
-      console.log(`${i} node: (${node.row}, ${node.col})`)
-      $(`#node-${node.row}-${node.col}`).css("background-color", "gray");
-
       $(`#node-${node.row}-${node.col}`).addClass("node-wall");
       disableStartButton(!(i === maze.length - 1));
     }, 10 * i);

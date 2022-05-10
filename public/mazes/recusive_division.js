@@ -23,7 +23,7 @@ function divide(options) {
     orientation
   } = options;
   const isHorizontal = orientation;
-  const maze = [];
+  let maze = [];
 
   if (width <= 3 || height <= 3) {
     return maze;
@@ -62,7 +62,6 @@ function divide(options) {
   let newH = isHorizontal ? wall.row - row : height;
   let newO = selectOrientation(newW, newH);
   const subMaze1 = divide({ grid, row: newR, col: newC, width: newW, height: newH, orientation: newO });
-  maze.concat(subMaze1);
 
   /* Calculate bounds for section right/bottom of the wall */
   newR = isHorizontal ? wall.row + 1 : wall.row;
@@ -71,9 +70,8 @@ function divide(options) {
   newH = isHorizontal ? row + height - wall.row - 1 : height;
   newO = selectOrientation(newW, newH);
   const subMaze2 = divide({ grid, row: newR, col: newC, width: newW, height: newH, orientation: newO });
-  maze.concat(subMaze2);
 
-  return maze;
+  return maze.concat(subMaze1).concat(subMaze2);;
 }
 
 /* Get bisecting wall orientation. True indicates horizontal orientation. */
@@ -142,34 +140,18 @@ function buildWallPerimeter(grid, width, height) {
   let perimeterWall = [];
   for (let i = 0; i < width; i++) {
     grid[0][i].isWall = true;
-
-    // FOR DEBUGGING PURPOSES
-    $(`#node-${0}-${i}`).css("background-color", "gray");
-
     perimeterWall.push(grid[0][i]);
   }
   for (let i = 0; i < height; i++) {
     grid[i][width - 1].isWall = true;
-
-    // FOR DEBUGGING PURPOSES
-    $(`#node-${i}-${width - 1}`).css("background-color", "gray");
-
     perimeterWall.push(grid[i][width - 1]);
   }
   for (let i = width - 1; i >= 0; i--) {
     grid[height - 1][i].isWall = true;
-
-    // FOR DEBUGGING PURPOSES
-    $(`#node-${height - 1}-${i}`).css("background-color", "gray");
-
     perimeterWall.push(grid[height - 1][i]);
   }
   for (let i = height - 1; i >= 0; i--) {
     grid[i][0].isWall = true;
-
-    // FOR DEBUGGING PURPOSES
-    $(`#node-${i}-${0}`).css("background-color", "gray");
-
     perimeterWall.push(grid[i][0]);
   }
   return perimeterWall;
