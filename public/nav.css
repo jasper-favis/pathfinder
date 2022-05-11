@@ -28,6 +28,11 @@ nav {
   font-size: 1.2rem;
 }
 
+.nav-logo>img {
+  width: 30px;
+  height: 30px;
+}
+
 .nav-list {
   height: 100%;
   display: flex;

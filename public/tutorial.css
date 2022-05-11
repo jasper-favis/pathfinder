@@ -10,8 +10,8 @@
 .tutorial-inner-container {
   margin-top: 10%;
   display: flex;
-  width: 650px;
-  height: 550px;
+  width: 700px;
+  height: 600px;
   align-items: center;
   justify-content: center;
   background-color: white;
@@ -22,8 +22,8 @@
 
 .tutorial {
   position: relative;
-  width: 610px;
-  height: 510px;
+  width: 650px;
+  height: 550px;
   font-weight: 400;
 }
 
@@ -37,6 +37,9 @@
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: rgba(0, 0, 0, 0.3);
+  background-image: url("/images/path-logo-medium.png");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .tutorial-text {
@@ -46,12 +49,22 @@
 }
 
 .tutorial-img {
-  margin: 20px auto;
-  display: block;
-  width: 160px;
-  height: 160px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  height: 150px;
+  display: flex;
+  justify-content: space-around;
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.gif {
+  width: 260px;
+  height: 260px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.3);
 }
 
 .tutorial-buttons {

@@ -22,6 +22,7 @@ const speedMapping = {
   "4x": 1 / 4
 }
 let grid = [];
+let tutorialPages = [tutorialPageOne, tutorialPageTwo]
 let source = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.25) };
 let target = { row: Math.floor(ROW_SIZE / 2), col: Math.floor(COL_SIZE * 0.75) };
 let algorithmName = "Dijkstra's Algorithm";
@@ -29,13 +30,14 @@ let mouseIsPressed = false;
 let isAnimationInProgress = false;
 let draggedNode;
 let speed = 1;
+let page = 0;
 
 $(document).ready(() => {
   setupGrid();
-  setupTutorial();
   setupNav();
   setupDescription();
   setupControls();
+  tutorialPageOne();
 });
 
 /* Detect click outside dropdown menu buttons to close menus. */
@@ -64,8 +66,24 @@ $(".tutorial-button").click(function (event) {
   $(".tutorial-outer-container").addClass("displayFlex");
 })
 
-$(".skip-button").click(function (event) {
-  $(".tutorial-outer-container").removeClass("displayFlex");
+$(".tut-button").click(function (event) {
+  const button = event.target.id;
+  switch (button) {
+    case "skip-button":
+      $(".tutorial-outer-container").removeClass("displayFlex");
+      page = 0;
+      return;
+    case "previous-button":
+      if (page < 1) return;
+      page -= 1;
+      tutorialPages[page]();
+      break;
+    case "next-button":
+      if (page >= tutorialPages.length - 1) return;
+      page += 1;
+      tutorialPages[page]();
+      break;
+  }
 })
 
 $(".clear-button").click(function (event) {
@@ -110,24 +128,6 @@ function setupGrid() {
   displayGrid();
 }
 
-function setupTutorial() {
-  $(".tutorial-header").text("Pathfinder");
-  const greeting = `
-    Welcome to Pathfinder! A web application for visualizing pathfinding algorithms.
-    <br>
-    <br>
-    What is a pathfinding algorithm?
-    <br>
-    A pathfinding algorithm finds a route, in some cases, the shortest route between two points.
-    With this application, you'll be able to visualize the different ways these algorithms explore their
-    surroundings in search for a target.
-  `;
-  const imgURL = "./images/path.png";
-  $(".tutorial-text").html(greeting);
-  $(".tutorial-img").css("background-image", `url('${imgURL}')`);
-  $(".tutorial-outer-container").addClass("displayFlex");
-}
-
 function setupNav() {
   $("nav").css("width", `${INNER_PAGE_WIDTH}px`);
 }
@@ -138,6 +138,45 @@ function setupDescription() {
 
 function setupControls() {
   $(".controls-container").css("width", `${INNER_PAGE_WIDTH}px`);
+}
+
+function tutorialPageOne() {
+  const text = `
+    Welcome to Pathfinder! A web application for visualizing pathfinding algorithms.
+    <br>
+    <br>
+    What is a pathfinding algorithm?
+    <br>
+    A pathfinding algorithm finds a route, in some cases, the shortest route between two points.
+    With this application, you'll be able to visualize the different ways these algorithms explore their
+    surroundings in search for a target.
+  `;
+  $(".tutorial-header").text("Pathfinder");
+  $(".tutorial-text").html(text);
+  $(".tutorial-img")
+    .empty()
+    .css("background-image", `url('./images/path.png')`)
+    .css("background-position", "center");
+  $(".tutorial-outer-container").addClass("displayFlex");
+}
+
+function tutorialPageTwo() {
+  const text = `
+    You can move the start and end markers anywhere on the grid. 
+    Click and drag the cursor to add or remove path obstacles.
+  `;
+  $(".tutorial-text").html(text);
+  const imgOne = $("<img></img>")
+    .attr("class", "gif")
+    .attr("src", "./images/move-waypoint.gif")
+  const imgTwo = $("<img></img>")
+    .attr("class", "gif")
+    .attr("src", "./images/create-wall.gif")
+  $(".tutorial-img")
+    .empty()
+    .append(imgOne)
+    .append(imgTwo)
+    .css("background-image", "none");
 }
 
 function createGrid() {

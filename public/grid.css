@@ -1,4 +1,5 @@
 .grid {
   display: grid;
   gap: 0;
+  cursor: cell;
 }
